@@ -1,10 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api/api";
 
 export default function Register() {
   const [form, setForm] = useState({ title: "", fullName: "", phone: "", password: "", confirmPassword: "" });
   const navigate = useNavigate();
+
+  // Prevent access to register page when already authenticated
+  useEffect(() => {
+    const checkSession = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      try {
+        const { data } = await API.get("/users/profile");
+        if (data.role === "admin") navigate("/admin");
+        else navigate("/");
+      } catch (err) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+      }
+    };
+    checkSession();
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

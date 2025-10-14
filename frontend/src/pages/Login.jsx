@@ -1,10 +1,29 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api/api";
 
 export default function Login() {
   const [form, setForm] = useState({ phone: "", password: "" });
   const navigate = useNavigate();
+
+  // If user already has a valid session, redirect away from login/register pages
+  useEffect(() => {
+    const checkSession = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      try {
+        const { data } = await API.get("/users/profile");
+        // active session — redirect based on role
+        if (data.role === "admin") navigate("/admin");
+        else navigate("/");
+      } catch (err) {
+        // token/session invalid -> clear stored auth so user can log in
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+      }
+    };
+    checkSession();
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
