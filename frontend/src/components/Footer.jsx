@@ -2,9 +2,21 @@ export default function Footer({ setShowBooking }) {
   const handleBookingClick = () => {
     const token = localStorage.getItem("token");
     if (token) {
-      setShowBooking(true);
+      const ustr = localStorage.getItem("user");
+      if (ustr) {
+        try {
+          const uu = JSON.parse(ustr);
+          if (uu.role === "admin") {
+            alert("Admins are not allowed to book appointments.");
+            return;
+          }
+        } catch (e) {}
+      }
+      if (typeof setShowBooking === "function") setShowBooking(true);
     } else {
+      // prefer register when user came from booking intent
       localStorage.setItem("afterLoginBooking", "true");
+      localStorage.setItem("authMode", "register");
       window.location.href = "/auth";
     }
   };
@@ -30,19 +42,19 @@ export default function Footer({ setShowBooking }) {
               </button>
             </li>
             <li>
-              <a href="#services" className="hover:underline">
+              <button onClick={() => window.location.hash = 'services'} className="hover:underline">
                 Our Services
-              </a>
+              </button>
             </li>
             <li>
-              <a href="#about" className="hover:underline">
+              <button onClick={() => window.location.hash = 'about'} className="hover:underline">
                 About Us
-              </a>
+              </button>
             </li>
             <li>
-              <a href="#contact" className="hover:underline">
+              <button onClick={() => window.location.hash = 'contact'} className="hover:underline">
                 Contact
-              </a>
+              </button>
             </li>
           </ul>
         </div>

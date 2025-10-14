@@ -1,12 +1,24 @@
 export default function ServicesSection({ setShowBooking }) {
+  // Require an active logged-in (non-admin) session to open booking
   const handleBookService = () => {
     const token = localStorage.getItem("token");
-    if (token) {
+    const ustr = localStorage.getItem("user");
+    const user = ustr ? (() => { try { return JSON.parse(ustr); } catch(e){ return null } })() : null;
+
+    if (token && user) {
+      if (user.role === "admin") {
+        // admins cannot book
+        alert("Admins are not allowed to book appointments.");
+        return;
+      }
+      // logged-in non-admin -> open booking
       setShowBooking(true);
-    } else {
-      localStorage.setItem("afterLoginBooking", "true");
-      window.location.href = "/auth";
+      return;
     }
+
+    // Not logged in -> preserve intent and send to login
+    localStorage.setItem("afterLoginBooking", "true");
+    window.location.href = "/auth/login";
   };
 
   const services = [
@@ -38,12 +50,23 @@ export default function ServicesSection({ setShowBooking }) {
       </div>
 
       <div className="text-center mt-10">
-        <button
-          onClick={handleBookService}
-          className="bg-black text-white px-6 py-3 rounded hover:bg-gray-900 transition"
-        >
-          Book Your Service
-        </button>
+        {(() => {
+          const ustr = localStorage.getItem("user");
+          const token = localStorage.getItem("token");
+          const user = ustr ? (() => { try { return JSON.parse(ustr); } catch(e){ return null } })() : null;
+          const isAdmin = user?.role === "admin";
+
+          return (
+            <button
+              onClick={handleBookService}
+              disabled={isAdmin}
+              title={isAdmin ? "Admins cannot book appointments" : undefined}
+              className={`px-6 py-3 rounded transition ${isAdmin ? 'bg-gray-300 text-gray-600 cursor-not-allowed' : 'bg-black text-white hover:bg-gray-900'}`}
+            >
+              Book Your Service
+            </button>
+          );
+        })()}
       </div>
     </section>
   );
