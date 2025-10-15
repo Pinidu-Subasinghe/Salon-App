@@ -24,7 +24,7 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-6 flex justify-between items-center h-16">
         <Link to="/" className="text-2xl font-bold text-gray-900">Salon Monaz</Link>
         <div className="flex items-center gap-6">
-          <Link to="/" className="hover:text-blue-600 font-medium">Home</Link>
+          <Link to="/pricing" className="hover:text-blue-600 font-medium">Pricing</Link>
           {token ? (
             <>
               <Link

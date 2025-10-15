@@ -2,7 +2,19 @@ import Package from "../models/Package.js";
 
 export const getPackages = async (req, res) => {
   try {
-    const packages = await Package.find();
+    const { search, category } = req.query;
+    const filter = {};
+    if (search) {
+      filter.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+      ];
+    }
+    if (category) {
+      filter.category = category;
+    }
+
+    const packages = await Package.find(filter).sort({ createdAt: -1 });
     res.status(200).json(packages);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -12,7 +24,8 @@ export const getPackages = async (req, res) => {
 export const addPackage = async (req, res) => {
   try {
     const { name, description, price } = req.body;
-    const newPackage = new Package({ name, description, price });
+    const category = req.body.category || "gents";
+    const newPackage = new Package({ name, description, price, category });
     await newPackage.save();
     res.status(201).json(newPackage);
   } catch (err) {

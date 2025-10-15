@@ -2,7 +2,7 @@ import { useState } from "react";
 
 export default function AddPackageModal({ onClose, onSave, initial = null }) {
   const [form, setForm] = useState(
-    initial || { name: "", description: "", price: "" }
+    initial || { name: "", description: "", price: "", category: "gents" }
   );
 
   const handleChange = (e) =>
@@ -43,6 +43,18 @@ export default function AddPackageModal({ onClose, onSave, initial = null }) {
             type="number"
             className="w-full border p-2 rounded"
           />
+          <div>
+            <label className="block text-sm font-medium mt-2 mb-1">Category</label>
+            <select
+              name="category"
+              value={form.category}
+              onChange={handleChange}
+              className="w-full border p-2 rounded"
+            >
+              <option value="gents">Gents</option>
+              <option value="woman">Woman</option>
+            </select>
+          </div>
           <div className="flex justify-end gap-2 pt-2">
             <button type="button" onClick={onClose} className="px-3 py-1 rounded border">Cancel</button>
             <button type="submit" className="px-4 py-1 rounded bg-blue-600 text-white">Save</button>

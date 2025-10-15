@@ -245,6 +245,7 @@ export default function AdminDashboard() {
                     <th className="p-2 text-left">Name</th>
                     <th className="p-2 text-left">Description</th>
                     <th className="p-2">Price</th>
+                    <th className="p-2">Category</th>
                     <th className="p-2">Actions</th>
                   </tr>
                 </thead>
@@ -254,6 +255,7 @@ export default function AdminDashboard() {
                       <td className="p-2">{p.name}</td>
                       <td className="p-2">{p.description}</td>
                       <td className="p-2 text-center">${p.price}</td>
+                      <td className="p-2 text-center">{p.category}</td>
                       <td className="p-2 text-center align-left">
                         <div className="flex justify-center items-center gap-2">
                           <button

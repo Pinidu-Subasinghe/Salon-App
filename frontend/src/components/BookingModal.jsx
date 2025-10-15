@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import API from "../api/api";
 
-export default function BookingModal({ onClose }) {
+export default function BookingModal({ onClose, initialPackage = null }) {
   const [step, setStep] = useState(1);
   const [services, setServices] = useState([]); // ✅ Dynamic packages from DB
   const [isFirstBooking, setIsFirstBooking] = useState(false);
-  const [selectedService, setSelectedService] = useState(null);
+  const [selectedService, setSelectedService] = useState(initialPackage);
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [form, setForm] = useState({
@@ -75,12 +75,22 @@ export default function BookingModal({ onClose }) {
       try {
         const { data } = await API.get("/packages");
         setServices(data); // assume data = [{ name, price, duration, description }]
+        // if an initial package was passed, ensure it's set from the fetched list by matching id
+        if (initialPackage && data && data.length) {
+          const match = data.find((d) => d._id === initialPackage._id || d.id === initialPackage._id);
+          if (match) setSelectedService(match);
+        }
       } catch (err) {
         console.error("Error fetching packages:", err);
       }
     };
     fetchPackages();
   }, []);
+
+  // If initialPackage prop changes, ensure selectedService is set to it
+  useEffect(() => {
+    if (initialPackage) setSelectedService(initialPackage);
+  }, [initialPackage]);
 
   // ✅ Check if current logged-in user has previous bookings -> first booking eligibility
   useEffect(() => {
@@ -182,9 +192,38 @@ export default function BookingModal({ onClose }) {
               Step 1 of 3 — Choose your service, date & time
             </p>
 
-            {/* ✅ Dynamic packages */}
+            {/* ✅ Dynamic packages. If opened with initialPackage, show only that one and make it non-clickable */}
             <div className="space-y-2 mb-4">
-              {services.length > 0 ? (
+              {initialPackage ? (
+                <div className="p-3 border rounded-lg bg-gray-50">
+                  <div className="flex justify-between">
+                    <span className="font-semibold">{initialPackage.name}</span>
+                    <span>
+                      {(() => {
+                        const p = Number(initialPackage.price);
+                        if (!Number.isFinite(p)) return "N/A";
+                        if (isFirstBooking) {
+                          const disc = Math.round(p * 0.1 * 100) / 100;
+                          const fp = Math.round((p - disc) * 100) / 100;
+                          return (
+                            <>
+                              <span className="line-through text-gray-400 mr-2">£{p.toFixed(2)}</span>
+                              <span className="text-green-600 font-semibold">£{fp.toFixed(2)} (10% off)</span>
+                            </>
+                          );
+                        }
+                        return `£${p.toFixed(2)}`;
+                      })()}
+                    </span>
+                  </div>
+                  {initialPackage.duration && (
+                    <p className="text-sm text-gray-500">{initialPackage.duration} min</p>
+                  )}
+                  {initialPackage.description && (
+                    <p className="text-xs text-gray-400 mt-1">{initialPackage.description}</p>
+                  )}
+                </div>
+              ) : services.length > 0 ? (
                 services.map((s) => (
                   <div
                     key={s._id || s.name}
