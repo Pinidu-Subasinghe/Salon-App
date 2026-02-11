@@ -1,7 +1,11 @@
 import axios from "axios";
 
+// Normalize base URL and ensure we always hit the Express "/api" prefix
+const rawBase = process.env.REACT_APP_API_URL || "";
+const trimmedBase = rawBase.replace(/\/+$/, "");
+
 const API = axios.create({
-  baseURL: process.env.REACT_APP_API_URL,
+  baseURL: `${trimmedBase}/api`,
 });
 
 API.interceptors.request.use((req) => {

@@ -39,9 +39,10 @@ app.use((req, res) => {
 // ✅ Global error handler
 app.use(errorHandler);
 
-// ✅ Conditional server start (local only)
-const PORT = process.env.PORT || 5000;
-if (process.env.NODE_ENV !== "production") {
+// ✅ Start HTTP server for non-Vercel environments (local, Railway, etc.)
+// Vercel sets the VERCEL env var and uses the exported app as a serverless handler.
+if (!process.env.VERCEL) {
+  const PORT = process.env.PORT || 5000;
   app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
 }
 
