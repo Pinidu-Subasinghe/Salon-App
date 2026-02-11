@@ -149,7 +149,7 @@ export default function BookingModal({ onClose, initialPackage = null }) {
     }
   }, []);
 
-  // guard: if logged in user is admin, do not allow booking
+  // guard: if logged in user is admin, do not allow boking
   const _userStr = localStorage.getItem("user");
   const _loggedUser = _userStr ? JSON.parse(_userStr) : null;
   if (_loggedUser && _loggedUser.role === "admin") {
