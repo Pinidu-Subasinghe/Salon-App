@@ -85,7 +85,7 @@ export default function BookingModal({ onClose, initialPackage = null }) {
       }
     };
     fetchPackages();
-  }, []);
+  }, [initialPackage]);
 
   // If initialPackage prop changes, ensure selectedService is set to it
   useEffect(() => {

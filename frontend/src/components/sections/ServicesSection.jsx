@@ -52,7 +52,6 @@ export default function ServicesSection({ setShowBooking }) {
       <div className="text-center mt-10">
         {(() => {
           const ustr = localStorage.getItem("user");
-          const token = localStorage.getItem("token");
           const user = ustr ? (() => { try { return JSON.parse(ustr); } catch(e){ return null } })() : null;
           const isAdmin = user?.role === "admin";
 
