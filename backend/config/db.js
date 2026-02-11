@@ -5,11 +5,13 @@ const connectDB = async () => {
     const uri =
       process.env.MONGO_URI ||
       process.env.MONGODB_URI ||
-      process.env.DATABASE_URL;
+      process.env.DATABASE_URL ||
+      // Railway MongoDB template exposes this by default
+      process.env.MONGO_URL;
 
     if (!uri) {
       console.error(
-        "❌ MongoDB connection string is not defined. Please set MONGO_URI (or MONGODB_URI / DATABASE_URL) in your environment variables."
+        "❌ MongoDB connection string is not defined. Please set one of MONGO_URI, MONGODB_URI, DATABASE_URL, or MONGO_URL in your environment variables."
       );
       process.exit(1);
     }
